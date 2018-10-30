@@ -1087,7 +1087,7 @@ private void getShippingFee(ShoppingCart cart, Handler<AsyncResult<Double>> resu
 }
 ```
 
-Now, lets update the `addProduct` request handler method. Add it at the `sendCart(cart,rc); //TODO: update the shipping fee` marker replacing the existing `sendCart(cart, rc);` with an updated code block:
+Now, lets update the `addProduct` request handler method. Replace the existing `sendCart(cart,rc); //TODO: update the shipping fee` marker with an updated code block:
 
 ```java
 this.getShippingFee(cart, message -> {
@@ -1101,7 +1101,7 @@ this.getShippingFee(cart, message -> {
 });
 ```
 
-Since we have the special case of a product already existing, we need to update it twice. Replace the line with `sendCart(cart, rc)` that you just added with another duplicate block:
+Since we have the special case of a product already existing, we need to update it a second time in a different location. Replace the existing `sendCart(cart, rc); //TODO: update the shipping fee, here as well` marker that was recently added at step `3. Create a Async method for retrieving a Product` with the duplicate code block from above:
 
 ```java
 this.getShippingFee(cart, message -> {
