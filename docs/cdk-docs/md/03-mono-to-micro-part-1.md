@@ -66,7 +66,7 @@ Run the following commands to set up your environment for this scenario and star
 #!/usr/bin/env bash
 
 cd ${HOME}/projects/inventory
-git pull --quiet
+//git pull --quiet
 
 
 ```
@@ -107,10 +107,7 @@ Once built, the resulting *jar* is located in the **target** directory:
 
 `ls target/*.jar`
 
-The listed jar archive, **inventory-1.0.0-SNAPSHOT-swarm.jar** , is an uber-jar with
-all the dependencies required packaged in the *jar* to enable running the
-application with **java -jar**. Thorntail (ex-WildFly Swarm) also creates a *war* packaging as a standard Java EE web app
-that could be deployed to any Java EE app server (for example, JBoss EAP, or its upstream WildFly project).
+The listed jar archive, **inventory-1.0.0-SNAPSHOT-thorntail.jar** , is an uber-jar with all the dependencies required packaged in the *jar* to enable running the application with **java -jar**. Thorntail (ex-WildFly Swarm) also creates a *war* packaging as a standard Java EE web app that could be deployed to any Java EE app server (for example, JBoss EAP, or its upstream WildFly project).
 
 Now let's write some code and create a domain model, service interface and a RESTful endpoint to access inventory:
 
@@ -376,17 +373,17 @@ You should see a **BUILD SUCCESS** in the build logs.
 
 Using the Thorntail (ex-WildFly Swarm) maven plugin (predefined in `pom.xml`), you can conveniently run the application locally and test the endpoint.
 
-`mvn wildfly-swarm:run`
+`mvn thorntail:run`
 
 > As an uber-jar, it could also be run with `java -jar target/inventory-1.0-SNAPSHOT-swarm.jar` but you don't need to do this now
 
 Once the application is done initializing you should see:
 
 ```
-INFO  [org.wildfly.swarm] (main) WFSWARM99999: Thorntail (ex-WildFly Swarm) is Ready
+INFO  [org.wildfly.swarm] (main) THORN99999: Thorntail is Ready
 ```
 
-Running locally using `wildfly-swarm:run` will use an in-memory database with default credentials. In a production application you
+Running locally using `thorntail:run` will use an in-memory database with default credentials. In a production application you
 will use an external source for credentials using an OpenShift _secret_ in later steps, but for now this will work for development and
 testing.
 
@@ -426,7 +423,7 @@ a `CTRL-C` for you: `clear`)
 You should see something like:
 
 ```
-WFLYSRV0028: Stopped deployment inventory-1.0.0-SNAPSHOT.war (runtime-name: inventory-1.0.0-SNAPSHOT.war) in 70ms
+INFO  [org.wildfly.swarm] (Thread-1) THORN0027: Shutdown requested
 ```
 
 This indicates the application is stopped.
@@ -590,8 +587,8 @@ into the `pom.xml` file at the `<!-- Add monitor fraction-->` marker:
 
 ```java
 <dependency>
-    <groupId>org.wildfly.swarm</groupId>
-    <artifactId>monitor</artifactId>
+    <groupId>io.thorntail</groupId>
+    <artifactId>microprofile-health</artifactId>
 </dependency>
 ```
 
@@ -629,8 +626,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import com.redhat.coolstore.service.InventoryService;
-import org.wildfly.swarm.health.Health;
-import org.wildfly.swarm.health.HealthStatus;
+
+import org.eclipse.microprofile.health.Health;
+import org.eclipse.microprofile.health.HealthCheckResponse;
 
 @Path("/infra")
 public class HealthChecks {
@@ -641,12 +639,12 @@ public class HealthChecks {
     @GET
     @Health
     @Path("/health")
-    public HealthStatus check() {
+    public HealthCheckResponse check() {
 
         if (inventoryService.isAlive()) {
-            return HealthStatus.named("service-state").up();
+            return HealthCheckResponse.named("service-state").up().build();
         } else {
-            return HealthStatus.named("service-state").down();
+            return HealthCheckResponse.named("service-state").down().build();
         }
     }
 }
@@ -697,6 +695,10 @@ You should see a JSON response like:
 {"id":"service-state","result":"UP"}],
 "outcome": "UP"
 }
+
+or
+
+{"outcome":"UP","checks":[]}
 ```
 
 You can see the definition of the health check from the perspective of OpenShift:

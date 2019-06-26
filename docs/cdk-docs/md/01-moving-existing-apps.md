@@ -51,13 +51,19 @@ the [RHAMT documentation](https://access.redhat.com/documentation/en/red-hat-app
 
 ## Setup for Exercise
 
+Clone the GIT repository:
+
+```sh
+cd ${HOME}
+git clone https://github.com/cvicens/modernize-apps-labs projects
+```
+
+
 Run the following commands to set up your environment for this scenario and start in the right directory:
 
 ```sh
-cd ${HOME}/projects/monolith
-git pull --quiet
-
-
+cd projects/monolith
+//git pull --quiet
 ```
 
 ## Analyzing a Java EE app using Red Hat Application Migration Toolkit
@@ -75,25 +81,42 @@ The Red Hat Application Migration Toolkit can be installed and used in a few dif
 
 For this scenario, we will use the CLI as you are the only one that will run RHAMT in this system. For multi-user use, the Web Console would be a good option.
 
+**0. Download and instal RH Application Migration Toolkit**
+
+Go to [here](https://developers.redhat.com/products/rhamt/download) and download the `Migration Toolkit CLI` zip file.
+
+Then unzip it in your `${HOME}` folder.
+
+```sh
+cp ~/Downloads/migrationtoolkit-rhamt-cli-4.2.1-offline.zip ~/${HOME}
+cd ${HOME}
+unzip migrationtoolkit-rhamt-cli-4.2.1-offline.zip
+```
+
 **1. Verify Red Hat Application Migration Toolkit CLI**
+
+> Make sure JAVA_HOME points to the required JAVA version. If you get this error maybe you should upgrade java: `Unrecognized option: --add-modules=java.se`
+> Also if you get a too many files error, 
 
 The RHAMT CLI is has been installed for you. To verify that the tool was properly installed, run:
 
-`${HOME}/rhamt-cli-4.0.0.Beta4/bin/rhamt-cli --version`
+```sh
+${HOME}/rhamt-cli-4.2.1.Final/bin/rhamt-cli --version
+```
 
 You should see:
 
 ```
-Using RHAMT at /root/rhamt-cli-4.0.0.Beta4
-> Red Hat Application Migration Toolkit (RHAMT) CLI, version 4.0.0.Beta4.
+Using RHAMT at ${HOME}/rhamt-cli-4.2.1.Final
+TECH PREVIEW Running on JDK openjdk version "9.0.4"
+OpenJDK Runtime Environment (build 9.0.4+11)
+OpenJDK 64-Bit Server VM (build 9.0.4+11, mixed mode)
+> Red Hat Application Migration Toolkit (RHAMT) CLI, version 4.2.1.Final.
 ```
 
 **2. Inspect the project source code**
 
-The sample project we will migrate is a monolithic Java EE application that implements
-an online shopping store called _Coolstore_ containing retail items that you can add to a shopping
-cart and purchase. The source code is laid out in different
-subdirectories according to Maven best practices.
+The sample project we will migrate is a monolithic Java EE application that implements an online shopping store called _Coolstore_ containing retail items that you can add to a shopping cart and purchase. The source code is laid out in different subdirectories according to Maven best practices.
 
 > Run the `tree` command below.
 
@@ -113,9 +136,7 @@ You should see:
         \-- webapp
 ```
 
-This is a minimal Java EE project which uses [JAX-RS](https://docs.oracle.com/javaee/7/tutorial/jaxrs.htm) for building
-RESTful services and the [Java Persistence API (JPA)](https://docs.oracle.com/javaee/7/tutorial/partpersist.htm) for connecting
-to a database and an [AngularJS](https://angularjs.org) frontend.
+This is a minimal Java EE project which uses [JAX-RS](https://docs.oracle.com/javaee/7/tutorial/jaxrs.htm) for building RESTful services and the [Java Persistence API (JPA)](https://docs.oracle.com/javaee/7/tutorial/partpersist.htm) for connecting to a database and an [AngularJS](https://angularjs.org) frontend.
 
 When you later deploy the application, it will look like:
 
@@ -127,7 +148,7 @@ The RHAMT CLI has a number of options to control how it runs. Run the below comm
 to execute the RHAMT CLI and analyze the existing project:
 
 ```
-~/rhamt-cli-4.0.0.Beta4/bin/rhamt-cli \
+~/rhamt-cli-4.2.1.Final/bin/rhamt-cli \
   --sourceMode \
   --input ~/projects/monolith \
   --output ~/rhamt-reports/monolith \
@@ -140,34 +161,16 @@ to execute the RHAMT CLI and analyze the existing project:
 > Note the use of the ``--source`` and ``--target`` options. This allows you to target specific migration paths supported by RHMAT. Other
 migration paths include **IBM® WebSphere® Application Server** and **JBoss EAP** 5/6/7.
 
-**Wait for it to complete before continuing!**. You should see `Report created: /root/rhamt-reports/monolith/index.html`.
+**Wait for it to complete before continuing!**. You should see `Report created: ~/projects/rhamt-reports/monolith/index.html`.
 
 > CDK Users will see a different location than `/root` and should browse there to see results.
 
 **3. View the results**
 
-Go to Azure portal and RDP to the LABVM using the following credentials
-* Username : demouser
-* Password : demoPassword1! </br>
 
-Once you are logged in to the VM, navigate to **Home > rhamt-reports > monolith** and open **index.html** where you can see the results.
+Navigate to **Home > rhamt-reports > monolith** and open **index.html** where you can see the results.
 
 You should see the landing page for the report:
-````
-For publicly accessing the landing page please run the commands one by one.
-
-sudo su -          (provide the same password of demouser if prompted)
-
-yum install epel-release
-yum install nginx
-systemctl start nginx
-systemctl enable nginx
-cp -R /home/demouser/rhamt-reports /usr/share/nginx/html
-systemctl restart nginx
-exit
-
-Then open a browser and navigate to http://<labvm IP Address>/rhamt-reports/monolith/index.html
-````
 
 ![Landing Page](../../../assets/moving-existing-apps/landingpage.png)
 
@@ -516,7 +519,7 @@ Run the below command to clean the old build artifacts and re-execute the RHAMT 
 
 ```
 mvn clean && \
-~/rhamt-cli-4.0.0.Beta4/bin/rhamt-cli \
+~/rhamt-cli-4.2.1.Final/bin/rhamt-cli \
   --sourceMode \
   --input ~/projects/monolith \
   --output ~/rhamt-reports/monolith \
@@ -526,7 +529,7 @@ mvn clean && \
   --packages com.redhat weblogic
 ```
 
-**Wait for it to complete before continuing!**. You should see `Report created: /root/rhamt-reports/monolith/index.html`.
+**Wait for it to complete before continuing!**. You should see `Report created: ~/projects/rhamt-reports/monolith/index.html`.
 
 **2. View the results**
 
@@ -548,11 +551,11 @@ Navigate back to the SSH session. Now that we migrated the application you are p
 
 Run the following command in the terminal window.
 
-``unzip -d $HOME $HOME/jboss-eap-7.1.0.zip``
+``unzip -d $HOME $HOME/jboss-eap-7.2.0.zip``
 
 We should also set the `JBOSS_HOME` environment variable like this:
 
-``export JBOSS_HOME=$HOME/jboss-eap-7.1``
+``export JBOSS_HOME=$HOME/jboss-eap-7.2``
 
 Done! That is how easy it is to install JBoss EAP. 
 
@@ -594,7 +597,7 @@ and set it to value `standalone-full.xml`
 </configuration>
 ```
 
-Since our application is using a Database we also configuration that by adding the following at the ```<-- TODO: Add Datasource definition here -->``` comment
+Since our application is using a Database we also configure that by adding the following at the ```<-- TODO: Add Datasource definition here -->``` comment
 
 ```java
 <resource>
@@ -629,7 +632,7 @@ We are now ready to build and test the project
 
 Our application is at this stage pretty standards based, but it needs two things. One is the  we need to add the JMS Topic since our application depends on it. 
 
-`export JBOSS_HOME=$HOME/jboss-eap-7.1 ; 
+`export JBOSS_HOME=$HOME/jboss-eap-7.2 ; 
 mvn wildfly:start wildfly:add-resource wildfly:shutdown`
 
 Wait for a `BUILD SUCCESS` message. If it fails, check that you made all the correct changes and try again!
@@ -640,18 +643,14 @@ Wait for a `BUILD SUCCESS` message. If it fails, check that you made all the cor
 
 We are now ready to deploy the application
 
-``export JBOSS_HOME=$HOME/jboss-eap-7.1 ; mvn wildfly:run``
+``export JBOSS_HOME=$HOME/jboss-eap-7.2 ; mvn wildfly:run``
 
 Wait for the server to startup. You should see `Deployed "ROOT.war" (runtime-name: "ROOT.war")`
+
 ## Test the application
-Navigate back to the RDP session.
-Open the browser, Access the application by navigating to 
+Open the browser, access the application by navigating to:
 
 `http://localhost:8080` and shop around for some cool stuff.
-
-````
-For publicly accessing the application, open a browser and navigate to http://<labvm IP Address>:8080
-````
 
 ![CoolStore Monolith](../../../assets/moving-existing-apps/coolstore-web.png)
 
@@ -660,10 +659,6 @@ You may see WARNINGs in the console output. We will fix these soon!
 ## Shutdown the application
 
 Before moving on, in the **Terminal** window, type CTRL-C.
-
-
-
-
 
 ## Deploy the monolith to OpenShift
 

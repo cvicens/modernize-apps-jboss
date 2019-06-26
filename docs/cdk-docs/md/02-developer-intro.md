@@ -48,7 +48,7 @@ Run the following commands to set up your environment for this scenario and star
 
 ```sh
 cd ${HOME}/projects/monolith
-git pull --quiet
+//git pull --quiet
 
 ```
 

@@ -40,7 +40,7 @@ Run the following commands to set up your environment for this scenario and star
 
 ```sh
 cd ${HOME}/projects/catalog
-git pull --quiet
+//git pull --quiet
 
 ```
 
@@ -142,6 +142,16 @@ We will also make use of Java Persistence API (JPA) so we need to add the follow
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+```
+
+If JKD 9+ please add this additional dependency if you get `java.lang.NoClassDefFoundError: javax/xml/bind/JAXBException`
+
+```java
+    <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>2.3.2</version>
     </dependency>
 ```
 
@@ -1051,7 +1061,6 @@ www       www-coolstore-dev.apps.127.0.0.1.nip.io             coolstore   <all> 
 My hostname is `www-coolstore-dev.apps.127.0.0.1.nip.io` but **yours will be different**.
 
 **2. Open the openshift console for Catalog - Applications - Routes at 
-
 `https://$OPENSHIFT_MASTER/console/project/catalog/browse/routes`**
 
 **3. Click on Create Route, and set**
@@ -1064,6 +1073,12 @@ My hostname is `www-coolstore-dev.apps.127.0.0.1.nip.io` but **yours will be dif
 ![Greeting](../../../assets/mono-to-micro-part-2/route-vals.png)
 
 Leave other values set to their defaults, and click **Create**
+
+> If you see a warning (orange traffic sign) let the instructor know, it likely this command needs to be run:
+
+```sh
+oc set env dc/router ROUTER_DISABLE_NAMESPACE_OWNERSHIP_CHECK=true -n default
+```
 
 **4. Test the route**
 
