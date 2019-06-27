@@ -55,7 +55,7 @@ Run the following commands to set up your environment for this scenario and star
 #!/usr/bin/env bash
 
 cd ${HOME}/projects/cart
-git pull --quiet
+//git pull --quiet
 
 
 ```
@@ -881,8 +881,7 @@ router.delete("/services/cart/:cartId/:itemId/:quantity").handler(this::removeSh
 
 Let's first test to decreasing the quantity for a product that is already in the shopping cart
 
-Start the cart service
-``mvn compile vertx:run``
+Start the cart service ``mvn compile vertx:run``
 
 The run this to get the quantity of item `329299` in the cart:
 
@@ -1133,6 +1132,16 @@ Let's also make sure that it works with a totally new shopping cart, which would
 This should now return a new shopping cart where one only instance of the product is added, because of our grep commands you would see something like this:
 
 `"quantity" : 1`
+
+Let's check the total shipping value with:
+
+```sh
+curl -s http://localhost:8082/services/cart/99999 | grep shippingTotal
+```
+
+This should return something like
+
+`"shippingTotal" : 37.0`
 
 The CartService depends on the CatalogService and just like in the Spring Boot example we could have created mocks for calling the Catalog Service, however since our example is already complex, we will simply test it with the CatalogService running. 
 
